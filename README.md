@@ -100,9 +100,17 @@ Grouped columns (full definitions in `data/schema/data_dictionary.md`):
 
 ## Current contents
 
-Seeded from the lab's foundational anchor set: **7 contrasts across 2 conditioning studies**
-(*Crassostrea gigas* transgenerational pesticide priming — Sol Dourdin et al. 2024; and
-*Stylophora pistillata* within-generation OA acclimatization — Liew et al. 2018). Five other
-anchor papers are logged as screened-and-excluded (reviews/perspectives, and observational
-designs that are not deliberate conditioning manipulations). The systematic search extends
-this baseline.
+**23 contrasts across 13 included studies** (OpenAlex search of 400 hits → 406 screened
+records → 13 includes / 393 excludes). Seeded anchors plus first search wave:
+
+- **Bivalves:** Sol Dourdin 2024 (*C. gigas* pesticide TGP); Parker 2011/2015/2021
+  (*S. glomerata* OA TGP, including persistence past metamorphosis); Lafont 2018
+  (*C. gigas* maternal poly(I:C) → OsHV-1 resistance); Griffith 2017 (*M. mercenaria* /
+  *A. irradians* costly OA TGP).
+- **Corals:** Liew 2018 (*S. pistillata* OA methylation); Putnam 2015 (*P. damicornis*
+  parental temp+OA); Bellantuono 2011 (*A. millepora* thermal preconditioning).
+- **Other:** Clark 2019 (urchin low-pH TGP); Donelson 2016 / Shama 2014 (fish thermal TGP);
+  Marshall 2008 (bryozoan copper maternal effects).
+
+Flagship filter (bivalve + persistence past metamorphosis tested) currently hits **2 contrasts**
+(Sol Dourdin field survival; Parker 2015 adulthood carryover).
