@@ -1,0 +1,9 @@
+stage,n
+identified,7
+screened,7
+unscreened_remaining,0
+excluded,5
+excluded:not-priming,2
+excluded:review,3
+included_studies,2
+extracted_contrasts,7

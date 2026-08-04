@@ -1,0 +1,12 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+
+# Generated spreadsheet is committed; raw API dumps can be large and are cache-like
+data/search/*_raw.json

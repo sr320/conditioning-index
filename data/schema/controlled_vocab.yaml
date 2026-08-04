@@ -1,0 +1,96 @@
+# Conditioning Atlas — controlled vocabulary and schema contract.
+# This file is the single source of truth for column order and allowed values.
+# Consumed by: scripts/04_validate_schema.py, scripts/03_build_xlsx.py, docs/atlas.js.
+#
+# grain: ONE ROW = ONE EXPERIMENTAL CONTRAST
+#   (a single stressor x dose x generation x assay x outcome), never one paper.
+#
+# For each column:
+#   type      : string | int | float | enum
+#   required  : must be non-empty (use "NR" for not-reported where allowed)
+#   values    : allowed set (enum only); "NA" / "NR" are always additionally allowed
+#   note      : human description (also feeds the data dictionary)
+
+columns:
+  # ---- Identity ----
+  - {name: record_id,        type: string, required: true,  note: "Unique row id, e.g. soldourdin2024-01"}
+  - {name: study_key,        type: string, required: true,  note: "author+year key, shared across a study's rows, e.g. soldourdin2024"}
+  - {name: doi,              type: string, required: false, note: "DOI, bare (no https://doi.org/ prefix)"}
+  - {name: first_author,     type: string, required: true,  note: "First author surname"}
+  - {name: year,             type: int,    required: true,  note: "Publication year"}
+  - {name: short_title,      type: string, required: false, note: "Short human-readable title"}
+
+  # ---- Organism ----
+  - {name: species,          type: string, required: true,  note: "Latin binomial"}
+  - {name: common_name,      type: string, required: false, note: "Common name"}
+  - {name: taxon_group,      type: enum,   required: true,  note: "Coarse taxon bucket for filtering",
+     values: [bivalve, coral, fish, gastropod, crustacean, echinoderm, cephalopod, macroalgae, other]}
+  - {name: taxon_class,      type: string, required: false, note: "Class, e.g. Bivalvia, Anthozoa"}
+
+  # ---- Priming design ----
+  - {name: generation_primed,     type: enum, required: true, note: "Generation that received the conditioning exposure",
+     values: [F0, F1, F2, F0-F1, F0-F1-F2, multi]}
+  - {name: generation_assayed,    type: enum, required: true, note: "Generation in which the outcome was measured",
+     values: [F0, F1, F2, F0-F1, F0-F1-F2, multi]}
+  - {name: transmission_channel,  type: enum, required: true, note: "Route from primed generation to assayed phenotype",
+     values: [maternal, paternal, biparental, somatic-within-gen, unclear]}
+  - {name: life_stage_primed,     type: enum, required: true, note: "Life stage at which conditioning was applied",
+     values: [gamete-broodstock, embryo, veliger-larva, pediveliger-larva, spat-juvenile, adult, whole-lifecycle]}
+  - {name: life_stage_assayed,    type: enum, required: true, note: "Life stage at which outcome was measured",
+     values: [embryo, veliger-larva, pediveliger-larva, spat-juvenile, adult, whole-lifecycle]}
+  - {name: priming_window_text,   type: string, required: false, note: "Free-text description of the exposure window"}
+
+  # ---- Stressor / dose ----
+  - {name: stressor_category,     type: enum, required: true, note: "Coarse stressor bucket",
+     values: [thermal, OA-low-pH, hypoxia, salinity, pathogen-immune, pollutant, nutrition, UV, multiple, other]}
+  - {name: stressor_specific,     type: string, required: true,  note: "Specific agent, e.g. poly(I:C); 18-pesticide mixture; +4C"}
+  - {name: dose_value,            type: float,  required: false, note: "Numeric dose if scalar"}
+  - {name: dose_unit,             type: string, required: false, note: "Unit for dose_value, e.g. ug/L, pH, degC, ppt"}
+  - {name: dose_text,             type: string, required: false, note: "Dose when non-scalar / multi-level"}
+  - {name: exposure_duration_value, type: float, required: false, note: "Numeric exposure duration"}
+  - {name: exposure_duration_unit,  type: enum,  required: false, note: "Unit for exposure duration",
+     values: [hours, days, weeks, months, years]}
+  - {name: environmentally_realistic, type: enum, required: false, note: "Is the dose ecologically realistic?",
+     values: ["yes", "no", "unclear"]}
+
+  # ---- Outcome / assay ----
+  - {name: assay_type,       type: enum, required: true, note: "What was measured",
+     values: [survival, growth-size, metamorphosis-competency, calcification, immune-challenge,
+              methylation, transcriptome, lncRNA, reproduction, physiology-other, behavior]}
+  - {name: outcome_metric,   type: string, required: true,  note: "Specific metric, e.g. % metamorphosed; log2FC DMGs"}
+  - {name: effect_direction, type: enum,   required: true,  note: "Direction of primed vs control",
+     values: [beneficial, costly, none, mixed]}
+  - {name: effect_size_value, type: float,  required: false, note: "Numeric effect size if reported"}
+  - {name: effect_size_type,  type: enum,   required: false, note: "Kind of effect size reported",
+     values: [percent-change, cohens-d, log2FC, survival-diff, odds-ratio, correlation, hedges-g, other, NR]}
+  - {name: significance,      type: enum,   required: true,  note: "Reported statistical significance",
+     values: [sig, ns, NR]}
+
+  # ---- Persistence (Section-6 payload) ----
+  - {name: persistence_value,          type: float,  required: false, note: "How long after priming the effect was still measured"}
+  - {name: persistence_unit,           type: enum,   required: false, note: "Unit for persistence_value",
+     values: [hours, days, weeks, months, years, generations]}
+  - {name: latest_timepoint_assayed,   type: string, required: false, note: "Latest life stage / time the outcome was checked"}
+  - {name: persisted_past_metamorphosis, type: enum, required: true, note: "Did the primed effect persist beyond metamorphosis?",
+     values: ["yes", "no", "not-tested", "NA"]}
+  - {name: persistence_notes,          type: string, required: false, note: "Free text on decay/persistence"}
+
+  # ---- Molecular ----
+  - {name: methylation_measured, type: enum, required: true, note: "Was DNA methylation assayed?",
+     values: ["yes", "no"]}
+  - {name: methylation_method,   type: enum, required: false, note: "Assay platform for methylation",
+     values: [WGBS, RRBS-Methyl-seq, MBD-seq, amplicon-BS, EPIC-array, other, NA]}
+  - {name: transcriptome_measured, type: enum, required: false, note: "Was the transcriptome assayed?",
+     values: ["yes", "no"]}
+  - {name: ncRNA_measured,         type: enum, required: false, note: "Were non-coding RNAs assayed?",
+     values: ["yes", "no"]}
+
+  # ---- Provenance ----
+  - {name: study_design,          type: string, required: false, note: "e.g. full-factorial F0xF1; reciprocal transplant"}
+  - {name: sample_size,           type: string, required: false, note: "n / replication, free text"}
+  - {name: source_location,       type: string, required: false, note: "Page/figure/table the value came from"}
+  - {name: extraction_confidence, type: enum,   required: true,  note: "Extractor confidence in this row",
+     values: [high, med, low]}
+  - {name: extractor,             type: string, required: true,  note: "Who/what extracted the row"}
+  - {name: extraction_date,       type: string, required: true,  note: "YYYY-MM-DD"}
+  - {name: notes,                 type: string, required: false, note: "Anything else"}
