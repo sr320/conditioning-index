@@ -100,17 +100,13 @@ Grouped columns (full definitions in `data/schema/data_dictionary.md`):
 
 ## Current contents
 
-**23 contrasts across 13 included studies** (OpenAlex search of 400 hits → 406 screened
-records → 13 includes / 393 excludes). Seeded anchors plus first search wave:
+**66 contrasts across 55 included studies** (OpenAlex search + curated bibliography).
+Screening log: 485 records → 55 include / 430 exclude.
 
-- **Bivalves:** Sol Dourdin 2024 (*C. gigas* pesticide TGP); Parker 2011/2015/2021
-  (*S. glomerata* OA TGP, including persistence past metamorphosis); Lafont 2018
-  (*C. gigas* maternal poly(I:C) → OsHV-1 resistance); Griffith 2017 (*M. mercenaria* /
-  *A. irradians* costly OA TGP).
-- **Corals:** Liew 2018 (*S. pistillata* OA methylation); Putnam 2015 (*P. damicornis*
-  parental temp+OA); Bellantuono 2011 (*A. millepora* thermal preconditioning).
-- **Other:** Clark 2019 (urchin low-pH TGP); Donelson 2016 / Shama 2014 (fish thermal TGP);
-  Marshall 2008 (bryozoan copper maternal effects).
+Major clusters now in the atlas:
+- **Thermal hardening** — Clegg/Jackson oysters; Brun scallop; Aleng/Dunphy/Dong/Georgoulis/Moyen/Song/Zhang mussel & clam heat-hardening; Glass anemone heat priming.
+- **Immune priming** — Green/Lafont/Morga poly(I:C) & OsHV-1 series; Cong/Yue/Wang scallop; Zhang/Li/Wang/Rey-Campos Vibrio priming; Fallet early-life microbial protection.
+- **OA / carryover / TGP** — Parker OA TGP series; Hettinger/Spencer Olympia larval carryover (past metamorphosis); Putnam/Gurr geoduck; Rondón parental diuron methylome; Kozal paternal heat.
+- **Anchors / other** — Sol Dourdin, Liew, Putnam coral parental, Bellantuono, Clark urchin, fish TGP, Marshall bryozoan.
 
-Flagship filter (bivalve + persistence past metamorphosis tested) currently hits **2 contrasts**
-(Sol Dourdin field survival; Parker 2015 adulthood carryover).
+Flagship filter (bivalve + persistence past metamorphosis tested) currently hits **8 contrasts**.
