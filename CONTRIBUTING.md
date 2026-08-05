@@ -43,3 +43,8 @@ generated workbook once in Excel or LibreOffice.
 
 Use a GitHub Issue to discuss schema changes or larger literature sweeps before
 starting work, especially when they affect existing rows or inclusion criteria.
+
+## Contribution license
+
+By submitting a contribution, you agree that it may be distributed under the
+repository's [Creative Commons Attribution 4.0 International License](LICENSE).

@@ -28,6 +28,7 @@ published through GitHub Pages from `docs/index.html`.
 | `Conditioning_Atlas_dashboard.html` | `dashboard_template.html` with data injected. Self-contained, opens in any browser. | **No — generated** |
 | `docs/index.html` | GitHub Pages copy of the self-contained dashboard. Configure Pages to deploy from the `main` branch's `/docs` folder. | **No — generated** |
 | `CHANGELOG.md` | One entry per maintenance pass: what was added, what was corrected, and why. | Yes — append, don't rewrite history |
+| `LICENSE` | Creative Commons Attribution 4.0 International license covering this repository. | No — legal text |
 | `scripts/` | The four-step build pipeline (below). | Yes |
 
 The rule of thumb: if a file's row above says "generated," don't hand-edit it —
@@ -159,10 +160,16 @@ See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the contributor workflow. Use
 GitHub Issues for schema changes, verification backlogs, or larger literature
 sweeps before starting work.
 
-The remaining repository-level decision is the license. No `LICENSE` should be
-added until the lab chooses whether the data should use a data/content license
-such as CC BY 4.0, the scripts should use a software license such as MIT or
-Apache-2.0, or the repository should carry separate licenses for each.
+## License
+
+Except where otherwise noted, this repository is licensed under the
+[Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/).
+You may share and adapt the material for any purpose with appropriate credit, a
+link to the license, and an indication of whether changes were made. See
+[`LICENSE`](LICENSE) for the complete legal text.
+
+Suggested attribution: *The Conditioning Atlas contributors, The Conditioning
+Atlas, https://github.com/sr320/conditioning-index, CC BY 4.0.*
 
 ## Provenance and known limitations
 
