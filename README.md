@@ -24,6 +24,7 @@ than left in a session that eventually gets reclaimed. See
 | `Conditioning_Atlas.xlsx` | The lab-facing deliverable: Atlas sheet + live Coverage-gaps formulas + data dictionary + screened-out log. | **No — generated** |
 | `dashboard_template.html` | The dashboard's actual HTML/CSS/JS, with `__DATA__` / `__FOOT__` placeholders. | Yes — this is where chart/filter/layout changes go |
 | `Conditioning_Atlas_dashboard.html` | `dashboard_template.html` with data injected. Self-contained, opens in any browser. | **No — generated** |
+| `docs/index.html` | GitHub Pages copy of the self-contained dashboard. Configure Pages to deploy from the `main` branch's `/docs` folder. | **No — generated** |
 | `CHANGELOG.md` | One entry per maintenance pass: what was added, what was corrected, and why. | Yes — append, don't rewrite history |
 | `scripts/` | The four-step build pipeline (below). | Yes |
 
@@ -43,6 +44,7 @@ excluded_*.tsv┘                                    │
                                                     │
                                                     └──▶ scripts/build_dashboard.py ──▶ Conditioning_Atlas_dashboard.html
                                                               (combines with dashboard_template.html)
+                                                              └──▶ docs/index.html (GitHub Pages)
 ```
 
 Run the whole thing after any change to `rows_*.tsv` or `excluded_*.tsv`:

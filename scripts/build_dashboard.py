@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-Build Conditioning_Atlas_dashboard.html from merged.json + dashboard_template.html.
+Build the standalone and GitHub Pages dashboards from merged.json +
+dashboard_template.html.
 
 dashboard_template.html is the real source file (edit charts, filters, or styling
 there). This script only:
@@ -9,10 +10,11 @@ there). This script only:
      source value started with '~'),
   2. injects that data and a footer string into the __DATA__ / __FOOT__
      placeholders in the template,
-  3. writes the self-contained result.
+  3. writes the self-contained result to Conditioning_Atlas_dashboard.html and
+     docs/index.html.
 
-Never hand-edit Conditioning_Atlas_dashboard.html directly — it is generated
-and will be overwritten the next time this script runs.
+Never hand-edit Conditioning_Atlas_dashboard.html or docs/index.html directly —
+they are generated and will be overwritten the next time this script runs.
 
 Usage:
     python3 scripts/build_dashboard.py
@@ -64,10 +66,15 @@ def main():
 
     html = tpl.replace("__DATA__", data_json).replace("__FOOT__", json.dumps(foot))
 
-    out_path = os.path.join(ROOT, "Conditioning_Atlas_dashboard.html")
-    with open(out_path, "w") as fh:
-        fh.write(html)
-    print(f"Wrote {out_path} ({len(html) / 1024:.1f} KB, {len(rows)} rows)")
+    out_paths = [
+        os.path.join(ROOT, "Conditioning_Atlas_dashboard.html"),
+        os.path.join(ROOT, "docs", "index.html"),
+    ]
+    os.makedirs(os.path.dirname(out_paths[1]), exist_ok=True)
+    for out_path in out_paths:
+        with open(out_path, "w") as fh:
+            fh.write(html)
+        print(f"Wrote {out_path} ({len(html) / 1024:.1f} KB, {len(rows)} rows)")
 
 
 if __name__ == "__main__":
