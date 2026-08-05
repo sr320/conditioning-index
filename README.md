@@ -1,6 +1,6 @@
 # The Conditioning Atlas
 
-[![Validate and build](https://github.com/sr320/conditioning-index/actions/workflows/validate.yml/badge.svg)](https://github.com/sr320/conditioning-index/actions/workflows/validate.yml)
+[![Validate and build](https://github.com/sr320/conditioning-atlas/actions/workflows/validate.yml/badge.svg)](https://github.com/sr320/conditioning-atlas/actions/workflows/validate.yml)
 
 Priming windows, doses, and persistence of induced environmental memory in
 marine invertebrates. A structured, filterable extraction of the sublethal
@@ -9,9 +9,9 @@ experiment, not per paper — built for the Roberts Lab's environmental memory
 / predictive phenotyping framework.
 
 This project is maintained in the
-[sr320/conditioning-index](https://github.com/sr320/conditioning-index)
+[sr320/conditioning-atlas](https://github.com/sr320/conditioning-atlas)
 GitHub repository. The
-[interactive dashboard](https://sr320.github.io/conditioning-index/) is
+[interactive dashboard](https://sr320.github.io/conditioning-atlas/) is
 published through GitHub Pages from `docs/index.html`.
 
 ## What's here
@@ -169,7 +169,7 @@ link to the license, and an indication of whether changes were made. See
 [`LICENSE`](LICENSE) for the complete legal text.
 
 Suggested attribution: *The Conditioning Atlas contributors, The Conditioning
-Atlas, https://github.com/sr320/conditioning-index, CC BY 4.0.*
+Atlas, https://github.com/sr320/conditioning-atlas, CC BY 4.0.*
 
 ## Provenance and known limitations
 
