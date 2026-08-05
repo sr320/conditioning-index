@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Conditioning Atlas</title>
+<style>
+  :root{
+    color-scheme: light;
+    --page:#f9f9f7; --surface-1:#fcfcfb;
+    --ink:#0b0b0b; --ink-2:#52514e; --muted:#898781;
+    --grid:#e1e0d9; --axis:#c3c2b7; --border:rgba(11,11,11,0.10);
+    --navy:#1F3864;
+    --s100:#cde2fb; --s150:#b7d3f6; --s200:#9ec5f4; --s250:#86b6ef;
+    --s300:#6da7ec; --s350:#5598e7; --s400:#3987e5; --s450:#2a78d6;
+    --s500:#256abf; --s550:#1c5cab; --s600:#184f95; --s650:#104281; --s700:#0d366b;
+    --series-1:#2a78d6; --series-warn:#e34948;
+    --chip:#ffffff;
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --page:#0d0d0d; --surface-1:#1a1a19;
+    --ink:#ffffff; --ink-2:#c3c2b7; --muted:#898781;
+    --grid:#2c2c2a; --axis:#383835; --border:rgba(255,255,255,0.10);
+    --navy:#cde2fb;
+    --s100:#0d366b; --s150:#104281; --s200:#184f95; --s250:#1c5cab;
+    --s300:#256abf; --s350:#2a78d6; --s400:#3987e5; --s450:#5598e7;
+    --s500:#6da7ec; --s550:#86b6ef; --s600:#9ec5f4; --s650:#b7d3f6; --s700:#cde2fb;
+    --series-1:#3987e5; --series-warn:#e66767;
+    --chip:#242422;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--page); color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",sans-serif; font-size:14px; line-height:1.5;
+  }
+  .wrap{max-width:1360px;margin:0 auto;padding:28px 24px 80px}
+  header{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:6px}
+  h1{font-size:27px;margin:0 0 4px;letter-spacing:-0.02em;color:var(--ink)}
+  .sub{color:var(--ink-2);font-size:14px;margin:0;max-width:72ch}
+  .toggle{
+    background:var(--surface-1);border:1px solid var(--border);border-radius:8px;
+    color:var(--ink-2);padding:7px 12px;font-size:12.5px;cursor:pointer;font-family:inherit;white-space:nowrap
+  }
+  .toggle:hover{color:var(--ink)}
+  .lede{
+    margin:18px 0 22px;padding:14px 16px;background:var(--surface-1);
+    border:1px solid var(--border);border-left:3px solid var(--series-1);border-radius:8px;
+    color:var(--ink-2);font-size:13.5px;max-width:96ch
+  }
+  .filters{
+    display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;
+    padding:14px 16px;background:var(--surface-1);border:1px solid var(--border);
+    border-radius:10px;margin-bottom:18px
+  }
+  .f{display:flex;flex-direction:column;gap:4px}
+  .f label{font-size:10.5px;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);font-weight:600}
+  select,input[type=search]{
+    font-family:inherit;font-size:13px;padding:6px 9px;border-radius:7px;
+    border:1px solid var(--axis);background:var(--chip);color:var(--ink);min-width:150px
+  }
+  input[type=search]{min-width:210px}
+  .reset{
+    align-self:flex-end;background:none;border:1px solid var(--axis);color:var(--ink-2);
+    border-radius:7px;padding:6px 11px;font-size:12.5px;cursor:pointer;font-family:inherit
+  }
+  .reset:hover{color:var(--ink)}
+  .count{margin-left:auto;align-self:flex-end;color:var(--ink-2);font-size:13px;font-variant-numeric:tabular-nums}
+  .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-bottom:18px}
+  .tile{background:var(--surface-1);border:1px solid var(--border);border-radius:10px;padding:15px 16px}
+  .tile .k{font-size:10.5px;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);font-weight:600;margin-bottom:7px}
+  .tile .v{font-size:31px;line-height:1;letter-spacing:-0.02em;color:var(--ink)}
+  .tile .n{font-size:12px;color:var(--ink-2);margin-top:7px}
+  .card{background:var(--surface-1);border:1px solid var(--border);border-radius:10px;padding:18px 20px 16px;margin-bottom:16px}
+  .card h2{font-size:15px;margin:0 0 3px;color:var(--ink);font-weight:650}
+  .card .cap{font-size:12.5px;color:var(--ink-2);margin:0 0 14px;max-width:92ch}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:900px){.row2{grid-template-columns:1fr}}
+  svg{display:block;width:100%;overflow:visible}
+  .lg{display:flex;gap:16px;flex-wrap:wrap;margin:0 0 12px;font-size:12px;color:var(--ink-2)}
+  .lg span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:11px;height:11px;border-radius:3px;display:inline-block}
+  .tip{
+    position:fixed;pointer-events:none;opacity:0;transition:opacity .09s;
+    background:var(--surface-1);color:var(--ink);border:1px solid var(--border);
+    border-radius:8px;padding:9px 11px;font-size:12px;max-width:340px;z-index:99;
+    box-shadow:0 6px 20px rgba(0,0,0,.16);line-height:1.45
+  }
+  .tip b{color:var(--ink)}
+  .tip .d{color:var(--ink-2)}
+  details.tbl{background:var(--surface-1);border:1px solid var(--border);border-radius:10px;padding:0;margin-bottom:16px}
+  details.tbl summary{padding:15px 20px;cursor:pointer;font-size:15px;font-weight:650;color:var(--ink)}
+  details.tbl > div{padding:0 20px 18px;overflow-x:auto}
+  table{border-collapse:collapse;width:100%;font-size:11.5px}
+  th{
+    text-align:left;padding:7px 9px;border-bottom:1.5px solid var(--axis);color:var(--muted);
+    font-size:10px;text-transform:uppercase;letter-spacing:0.05em;position:sticky;top:0;background:var(--surface-1);white-space:nowrap
+  }
+  td{padding:7px 9px;border-bottom:1px solid var(--grid);color:var(--ink-2);vertical-align:top}
+  td.sp{font-style:italic;color:var(--ink);white-space:nowrap}
+  a{color:var(--series-1)}
+  .pill{display:inline-block;padding:1.5px 7px;border-radius:20px;font-size:10.5px;font-weight:600;white-space:nowrap}
+  footer{color:var(--muted);font-size:12px;margin-top:26px;max-width:100ch;line-height:1.6}
+  .empty{color:var(--muted);font-size:13px;padding:26px 0;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div>
+    <h1>The Conditioning Atlas</h1>
+    <p class="sub">Priming windows, doses, and persistence of induced environmental memory in marine invertebrates — <span id="hdrN"></span> experiments from <span id="hdrP"></span> papers.</p>
+  </div>
+  <button class="toggle" id="tt">Dark mode</button>
+</header>
+
+<div class="lede">
+  The framework says the application program is to <em>identify the windows, identify the doses, and characterize how long the induced memory persists relative to production timescales</em>. This is that table, made filterable. <b>Persistence</b> is days from the end of conditioning to the assessment; a <b>0</b> means offspring were spawned straight into the challenge, which is why so much of this literature cannot speak to memory duration at all. <b>“not reported”</b> is never inferred or filled in. One caveat: a handful of rows were conditioned <em>continuously</em>, so their persistence value is a tracking window rather than a post-conditioning recovery gap — those rows say so in Notes, and should not be ranked against clean-gap rows.
+</div>
+
+<div class="filters" id="filters">
+  <div class="f"><label for="fTax">Taxon</label><select id="fTax"></select></div>
+  <div class="f"><label for="fStr">Stressor</label><select id="fStr"></select></div>
+  <div class="f"><label for="fStg">Conditioning stage</label><select id="fStg"></select></div>
+  <div class="f"><label for="fDir">Direction</label><select id="fDir"></select></div>
+  <div class="f"><label for="fDec">Decay tested?</label><select id="fDec"></select></div>
+  <div class="f"><label for="fMol">Molecular layer</label><select id="fMol"></select></div>
+  <div class="f"><label for="fQ">Search</label><input type="search" id="fQ" placeholder="species, stressor, notes…"></div>
+  <button class="reset" id="rs">Reset</button>
+  <div class="count" id="cnt"></div>
+</div>
+
+<div class="tiles" id="tiles"></div>
+
+<div class="card">
+  <h2>Where the evidence is — and is not</h2>
+  <p class="cap">Experiments per taxon × stressor. Empty cells are the map of what nobody has run. Hover a cell for the studies in it.</p>
+  <div id="heat"></div>
+</div>
+
+<div class="row2">
+  <div class="card">
+    <h2>Which window was primed</h2>
+    <p class="cap">The life stage the conditioning exposure was applied to. The framework names embryo–larval development as the programming window; the literature overwhelmingly conditions broodstock instead.</p>
+    <div id="barStage"></div>
+  </div>
+  <div class="card">
+    <h2>Was decay of the induced state tested?</h2>
+    <p class="cap">Whether the study could distinguish a persistent mark from a transient one. “Not tested” means a single post-conditioning timepoint.</p>
+    <div id="barDecay"></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>How long the memory was actually given to persist</h2>
+  <p class="cap">Days from the end of conditioning to the assessment, log scale, one panel per taxon. Points at <b>0 d</b> sit in the separated column at left: offspring spawned directly into the challenge, so no persistence was tested. Red marks studies where conditioning made performance <em>worse</em>.</p>
+  <div class="lg">
+    <span><i class="sw" style="background:var(--series-1)"></i>Improved, mixed, or no effect</span>
+    <span><i class="sw" style="background:var(--series-warn)"></i>Worsened performance</span>
+  </div>
+  <div id="strip"></div>
+</div>
+
+<details class="tbl">
+  <summary>Table view — every filtered row <span id="tblN" style="color:var(--muted);font-weight:400"></span></summary>
+  <div id="tbl"></div>
+</details>
+
+<footer id="foot"></footer>
+</div>
+<div class="tip" id="tip"></div>
+
+<script>
+const DATA = __DATA__;
+const TAXA=["Bivalve","Coral/cnidarian","Crustacean","Echinoderm","Polychaete/other","Gastropod"];
+const STRESSORS=["Temperature","pH/OA","Hypoxia","Salinity","Pollutant","Pathogen/immune","Multiple"];
+const STAGES=["Broodstock/adult","Gamete","Embryo","Larva","Juvenile","Multiple"];
+const DIRS=["Improved","Mixed","No effect","Worsened","Not assessable"];
+const DECAY=["Persisted","Decayed","Strengthened","Not tested"];
+const RAMP=["--s150","--s250","--s350","--s450","--s550","--s650"];
+const tip=document.getElementById("tip");
+function cssv(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim()}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+function showTip(html,e){tip.innerHTML=html;tip.style.opacity=1;moveTip(e)}
+function moveTip(e){
+  const r=tip.getBoundingClientRect();
+  let x=e.clientX+14,y=e.clientY+14;
+  if(x+r.width>innerWidth-10)x=e.clientX-r.width-14;
+  if(y+r.height>innerHeight-10)y=e.clientY-r.height-14;
+  tip.style.left=x+"px";tip.style.top=y+"px";
+}
+function hideTip(){tip.style.opacity=0}
+function bind(el,html){
+  el.addEventListener("mouseenter",e=>showTip(html,e));
+  el.addEventListener("mousemove",moveTip);
+  el.addEventListener("mouseleave",hideTip);
+}
+/* pick readable ink for a filled cell from the fill's own luminance, so it stays
+   correct in both modes (the sequential ramp inverts between them) */
+function inkOn(hex){
+  const m=/^#?([0-9a-f]{6})$/i.exec(hex.trim());
+  if(!m) return cssv("--ink");
+  const n=parseInt(m[1],16);
+  const lin=c=>{c/=255;return c<=0.03928?c/12.92:Math.pow((c+0.055)/1.055,2.4)};
+  const Y=0.2126*lin(n>>16&255)+0.7152*lin(n>>8&255)+0.0722*lin(n&255);
+  return Y>0.42?"#0b0b0b":"#ffffff";
+}
+const SVGNS="http://www.w3.org/2000/svg";
+function mk(t,a){const e=document.createElementNS(SVGNS,t);for(const k in a)e.setAttribute(k,a[k]);return e}
+
+/* ---------- filters ---------- */
+const SEL={fTax:["taxon",TAXA],fStr:["stressor_category",STRESSORS],fStg:["conditioning_stage",STAGES],
+           fDir:["direction",DIRS],fDec:["decay",DECAY]};
+function fillSelects(){
+  for(const id in SEL){
+    const [key,order]=SEL[id];
+    const present=[...new Set(DATA.map(r=>r[key]))];
+    const opts=order.filter(o=>present.includes(o)).concat(present.filter(p=>!order.includes(p)).sort());
+    const s=document.getElementById(id);
+    s.innerHTML='<option value="">All</option>'+opts.map(o=>`<option>${esc(o)}</option>`).join("");
+  }
+  const m=document.getElementById("fMol");
+  m.innerHTML='<option value="">All</option>'+
+    ["Any molecular layer","DNA methylation","Transcriptome / RNA-seq","Targeted qPCR","Chromatin / histone","ncRNA","None (phenotype only)"]
+    .map(o=>`<option>${esc(o)}</option>`).join("");
+}
+function molMatch(r,v){
+  const s=(r.molecular_layers||"").toLowerCase();
+  const none=s.startsWith("none");
+  switch(v){
+    case "Any molecular layer": return !none;
+    case "DNA methylation": return s.includes("methylation");
+    case "Transcriptome / RNA-seq": return s.includes("transcriptome")||s.includes("rna-seq");
+    case "Targeted qPCR": return s.includes("qpcr");
+    case "Chromatin / histone": return s.includes("chromatin")||s.includes("histone");
+    case "ncRNA": return s.includes("ncrna")||s.includes("mirna")||s.includes("lncrna");
+    case "None (phenotype only)": return none;
+    default: return true;
+  }
+}
+function current(){
+  const g=id=>document.getElementById(id).value;
+  const q=g("fQ").trim().toLowerCase(), mol=g("fMol");
+  return DATA.filter(r=>{
+    for(const id in SEL){const v=g(id); if(v && r[SEL[id][0]]!==v) return false;}
+    if(mol && !molMatch(r,mol)) return false;
+    if(q){
+      const hay=[r.species,r.stressor,r.notes,r.study_id,r.readouts,r.effect_magnitude,r.challenge,r.doi,r.molecular_layers,r.dose_treatment].join(" ").toLowerCase();
+      if(!hay.includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+/* ---------- tiles ---------- */
+function tiles(rows){
+  const n=rows.length;
+  const papers=new Set(rows.filter(r=>r.doi&&r.doi!=="not reported").map(r=>r.doi.toLowerCase())).size;
+  const untested=rows.filter(r=>r.decay==="Not tested").length;
+  const worse=rows.filter(r=>r.direction==="Worsened").length;
+  const mixed=rows.filter(r=>r.direction==="Mixed").length;
+  const nz=rows.map(r=>r.p).filter(p=>p!==null&&p>0);
+  const med=nz.length?nz.slice().sort((a,b)=>a-b)[Math.floor(nz.length/2)]:null;
+  const zero=rows.filter(r=>r.p===0).length;
+  const T=[
+    ["Experiments",n,`${papers} paper${papers===1?"":"s"} · one row per experiment`],
+    ["Decay never tested",untested+(n?` <span style="font-size:15px;color:var(--ink-2)">/ ${n}</span>`:""),
+      n?`${Math.round(100*untested/n)}% of rows measure a single post-conditioning timepoint`:"—"],
+    ["Median persistence tested",med===null?"—":med+" d",
+      nz.length?`across ${nz.length} rows with a non-zero gap · ${zero} rows tested at 0 d`:"no non-zero gaps in this slice"],
+    ["Conditioning backfired",worse+(mixed?` + ${mixed}`:""),
+      `${worse} worsened${mixed?`, ${mixed} mixed`:""} — the epigenetic-trap evidence`],
+  ];
+  document.getElementById("tiles").innerHTML=T.map(([k,v,nn])=>
+    `<div class="tile"><div class="k">${k}</div><div class="v">${v}</div><div class="n">${nn}</div></div>`).join("");
+}
+
+/* ---------- heatmap ---------- */
+function heat(rows){
+  const host=document.getElementById("heat"); host.innerHTML="";
+  const taxa=TAXA.filter(t=>DATA.some(r=>r.taxon===t));
+  const cell=Object.create(null); let max=0;
+  taxa.forEach(t=>STRESSORS.forEach(s=>{
+    const hits=rows.filter(r=>r.taxon===t&&r.stressor_category===s);
+    cell[t+"|"+s]=hits; max=Math.max(max,hits.length);
+  }));
+  const L=132, T=54, CW=118, CH=42, GAP=2;
+  const W=L+STRESSORS.length*CW, H=T+taxa.length*CH+8;
+  const svg=mk("svg",{viewBox:`0 0 ${W} ${H}`,style:`max-width:${W}px`});
+  STRESSORS.forEach((s,i)=>{
+    const t=mk("text",{x:L+i*CW+CW/2,y:T-14,"text-anchor":"middle","font-size":11.5,fill:cssv("--ink-2")});
+    t.textContent=s; svg.appendChild(t);
+  });
+  taxa.forEach((tx,r)=>{
+    const lab=mk("text",{x:L-12,y:T+r*CH+CH/2+4,"text-anchor":"end","font-size":11.5,fill:cssv("--ink-2")});
+    lab.textContent=tx; svg.appendChild(lab);
+    STRESSORS.forEach((s,c)=>{
+      const hits=cell[tx+"|"+s], v=hits.length;
+      const x=L+c*CW+GAP/2, y=T+r*CH+GAP/2, w=CW-GAP, h=CH-GAP;
+      let fill,ink,strokeAttr={};
+      if(v===0){fill="transparent";ink=cssv("--muted");strokeAttr={stroke:cssv("--grid"),"stroke-width":1};}
+      else{
+        const step=Math.min(RAMP.length-1,Math.round((v/max)*(RAMP.length-1)+0.0001));
+        fill=cssv(RAMP[step]); ink=inkOn(fill);
+      }
+      const rect=mk("rect",Object.assign({x,y,width:w,height:h,rx:4,fill},strokeAttr));
+      svg.appendChild(rect);
+      const t=mk("text",{x:x+w/2,y:y+h/2+4,"text-anchor":"middle","font-size":12,
+        "font-variant-numeric":"tabular-nums",fill:ink,"font-weight":v?600:400,"pointer-events":"none"});
+      t.textContent=v?v:"·"; svg.appendChild(t);
+      const names=hits.slice(0,9).map(r=>`${esc(r.study_id)} — <i>${esc(r.species.split(";")[0])}</i>`).join("<br>");
+      bind(rect, v===0
+        ? `<b>${esc(tx)} × ${esc(s)}</b><div class="d">No experiment in the atlas.</div>`
+        : `<b>${esc(tx)} × ${esc(s)}</b><div class="d">${v} experiment${v===1?"":"s"}</div><div style="margin-top:6px">${names}${v>9?`<br><span class="d">+${v-9} more</span>`:""}</div>`);
+    });
+  });
+  host.appendChild(svg);
+}
+
+/* ---------- horizontal bars ---------- */
+function bars(hostId,rows,key,order,noteFn){
+  const host=document.getElementById(hostId); host.innerHTML="";
+  const present=order.filter(o=>DATA.some(r=>r[key]===o));
+  const counts=present.map(o=>[o,rows.filter(r=>r[key]===o).length]);
+  const max=Math.max(1,...counts.map(c=>c[1]));
+  const L=136, BW=22, GAPY=13, R=52, T=6;
+  const W=560, H=T+counts.length*(BW+GAPY);
+  const plotW=W-L-R;
+  const svg=mk("svg",{viewBox:`0 0 ${W} ${H}`});
+  counts.forEach(([lab,v],i)=>{
+    const y=T+i*(BW+GAPY);
+    const tl=mk("text",{x:L-12,y:y+BW/2+4,"text-anchor":"end","font-size":11.5,fill:cssv("--ink-2")});
+    tl.textContent=lab; svg.appendChild(tl);
+    svg.appendChild(mk("line",{x1:L,x2:L,y1:y-3,y2:y+BW+3,stroke:cssv("--axis"),"stroke-width":1}));
+    const w=Math.max(v?3:0,(v/max)*plotW);
+    if(v){
+      const bar=mk("path",{d:roundRight(L,y,w,BW,4),fill:cssv("--series-1")});
+      svg.appendChild(bar);
+      bind(bar,`<b>${esc(lab)}</b><div class="d">${v} of ${rows.length} filtered experiments${noteFn?"<br>"+noteFn(lab):""}</div>`);
+    }
+    const vl=mk("text",{x:L+w+9,y:y+BW/2+4,"font-size":12,"font-variant-numeric":"tabular-nums",fill:cssv("--ink")});
+    vl.textContent=v; svg.appendChild(vl);
+  });
+  host.appendChild(svg);
+}
+function roundRight(x,y,w,h,r){
+  r=Math.min(r,w);
+  return `M${x},${y} H${x+w-r} A${r},${r} 0 0 1 ${x+w},${y+r} V${y+h-r} A${r},${r} 0 0 1 ${x+w-r},${y+h} H${x} Z`;
+}
+
+/* ---------- persistence strip ---------- */
+function strip(rows){
+  const host=document.getElementById("strip"); host.innerHTML="";
+  const taxa=TAXA.filter(t=>rows.some(r=>r.taxon===t&&r.p!==null));
+  if(!taxa.length){host.innerHTML='<div class="empty">No row in this slice reports a persistence window.</div>';return}
+  const L=132, ZW=54, GAPZ=16, R=26, T=34, BH=46;
+  const W=920, H=T+taxa.length*BH+34;
+  const x0=L+ZW+GAPZ, plotW=W-x0-R;
+  const lo=0.05, hi=1000;
+  const sx=v=>x0+(Math.log10(v)-Math.log10(lo))/(Math.log10(hi)-Math.log10(lo))*plotW;
+  const svg=mk("svg",{viewBox:`0 0 ${W} ${H}`});
+  // zero column
+  svg.appendChild(mk("rect",{x:L,y:T-8,width:ZW,height:taxa.length*BH+4,rx:5,fill:cssv("--grid"),opacity:0.55}));
+  const z=mk("text",{x:L+ZW/2,y:T-16,"text-anchor":"middle","font-size":11,fill:cssv("--muted")});
+  z.textContent="0 d"; svg.appendChild(z);
+  // ticks
+  [0.1,1,10,100,1000].forEach(t=>{
+    const x=sx(t);
+    svg.appendChild(mk("line",{x1:x,x2:x,y1:T-8,y2:T+taxa.length*BH-4,stroke:cssv("--grid"),"stroke-width":1}));
+    const lb=mk("text",{x,y:T-16,"text-anchor":"middle","font-size":11,fill:cssv("--muted")});
+    lb.textContent=t<1?t+"":(t>=1000?"1000":t+""); svg.appendChild(lb);
+  });
+  const ax=mk("text",{x:x0+plotW/2,y:H-8,"text-anchor":"middle","font-size":11,fill:cssv("--muted")});
+  ax.textContent="days between end of conditioning and assessment (log scale)"; svg.appendChild(ax);
+  taxa.forEach((tx,i)=>{
+    const yb=T+i*BH, mid=yb+BH/2-6;
+    const lab=mk("text",{x:L-12,y:mid+4,"text-anchor":"end","font-size":11.5,fill:cssv("--ink-2")});
+    lab.textContent=tx; svg.appendChild(lab);
+    const pts=rows.filter(r=>r.taxon===tx&&r.p!==null);
+    pts.forEach((r,k)=>{
+      const isZero=r.p<=0;
+      const cx=isZero? L+10+ (k%4)*11 : sx(Math.max(lo,r.p));
+      const jit=((k*37)%5-2)*4.4;
+      const bad=r.direction==="Worsened";
+      const c=mk("circle",{cx,cy:mid+jit,r:4.6,fill:bad?cssv("--series-warn"):cssv("--series-1"),
+        stroke:cssv("--surface-1"),"stroke-width":2});
+      svg.appendChild(c);
+      bind(c,`<b>${esc(r.study_id)}</b> · <i>${esc(r.species.split(";")[0])}</i>
+        <div class="d" style="margin-top:5px">${esc(r.stressor)} · ${esc(r.conditioning_stage)} · ${esc(r.generations)}</div>
+        <div style="margin-top:6px">Persistence: <b>${esc(r.persistence_days)} d</b> · decay: ${esc(r.decay)}</div>
+        <div class="d" style="margin-top:4px">Direction: ${esc(r.direction)}</div>
+        <div class="d" style="margin-top:4px">${esc(r.effect_magnitude).slice(0,190)}</div>`);
+    });
+  });
+  host.appendChild(svg);
+}
+
+/* ---------- table ---------- */
+const PILL={Improved:["--s200","--ink"],Mixed:["--grid","--ink"],Worsened:["--series-warn","#fff"],
+            "No effect":["--grid","--ink-2"],"Not assessable":["--grid","--muted"]};
+function table(rows){
+  const host=document.getElementById("tbl");
+  document.getElementById("tblN").textContent=`(${rows.length})`;
+  if(!rows.length){host.innerHTML='<div class="empty">No rows match these filters.</div>';return}
+  const cols=[["study_id","Study"],["species","Species"],["stressor","Stressor"],
+    ["conditioning_stage","Stage"],["dose_treatment","Dose vs control"],["duration","Duration"],
+    ["generations","Gen"],["persistence_days","Persist (d)"],["decay","Decay"],
+    ["direction","Direction"],["effect_magnitude","Magnitude"],["molecular_layers","Molecular"],
+    ["concordance","Concordance"],["applied_framing","Framing"]];
+  let h="<table><thead><tr>"+cols.map(c=>`<th>${c[1]}</th>`).join("")+"</tr></thead><tbody>";
+  for(const r of rows){
+    h+="<tr>";
+    for(const [k] of cols){
+      let v=esc(r[k]||"");
+      if(k==="study_id") v=r.doi&&r.doi!=="not reported"
+        ? `<a href="https://doi.org/${esc(r.doi)}" target="_blank" rel="noopener">${esc(r.study_id)}</a>` : v;
+      if(k==="species") v=`<span class="sp">${v}</span>`;
+      if(k==="direction"){const p=PILL[r.direction]||["--grid","--ink-2"];
+        v=`<span class="pill" style="background:var(${p[0]});color:${p[1].startsWith("--")?`var(${p[1]})`:p[1]}">${esc(r.direction)}</span>`}
+      h+=`<td>${v}</td>`;
+    }
+    h+="</tr>";
+  }
+  document.getElementById("tbl").innerHTML=h+"</tbody></table>";
+}
+
+/* ---------- render ---------- */
+function render(){
+  const rows=current();
+  document.getElementById("cnt").textContent=`${rows.length} of ${DATA.length} experiments shown`;
+  tiles(rows); heat(rows);
+  bars("barStage",rows,"conditioning_stage",STAGES);
+  bars("barDecay",rows,"decay",DECAY);
+  strip(rows); table(rows);
+}
+function boot(){
+  fillSelects();
+  document.getElementById("hdrN").textContent=DATA.length;
+  document.getElementById("hdrP").textContent=new Set(DATA.filter(r=>r.doi&&r.doi!=="not reported").map(r=>r.doi.toLowerCase())).size;
+  document.getElementById("foot").innerHTML=__FOOT__;
+  document.getElementById("filters").addEventListener("change",render);
+  document.getElementById("fQ").addEventListener("input",render);
+  document.getElementById("rs").addEventListener("click",()=>{
+    ["fTax","fStr","fStg","fDir","fDec","fMol"].forEach(i=>document.getElementById(i).value="");
+    document.getElementById("fQ").value=""; render();
+  });
+  document.getElementById("tt").addEventListener("click",()=>{
+    const d=document.documentElement.getAttribute("data-theme")==="dark";
+    document.documentElement.setAttribute("data-theme",d?"light":"dark");
+    document.getElementById("tt").textContent=d?"Dark mode":"Light mode";
+    render();
+  });
+  render();
+}
+boot();
+</script>
+</body>
+</html>
