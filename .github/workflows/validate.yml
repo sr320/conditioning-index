@@ -1,0 +1,68 @@
+name: Validate and build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Install Python dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Validate and merge source rows
+        run: python scripts/merge_rows.py
+
+      - name: Check that committed datasets are current
+        run: git diff --exit-code -- merged.json conditioning_atlas.tsv
+
+      - name: Build workbook
+        run: python scripts/build_xlsx.py
+
+      - name: Build dashboard and GitHub Pages copy
+        run: python scripts/build_dashboard.py
+
+      - name: Verify dashboard outputs
+        run: |
+          cmp Conditioning_Atlas_dashboard.html docs/index.html
+          python - <<'PY'
+          from pathlib import Path
+
+          dashboard = Path("docs/index.html").read_text(encoding="utf-8")
+          assert dashboard.startswith("<!DOCTYPE html>")
+          assert "__DATA__" not in dashboard
+          assert "__FOOT__" not in dashboard
+          assert "<title>The Conditioning Atlas</title>" in dashboard
+          PY
+
+      - name: Upload rebuilt deliverables
+        uses: actions/upload-artifact@v7
+        with:
+          name: conditioning-atlas-${{ github.sha }}
+          path: |
+            Conditioning_Atlas.xlsx
+            Conditioning_Atlas_dashboard.html
+            conditioning_atlas.tsv
+          if-no-files-found: error
+          retention-days: 30

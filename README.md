@@ -1,16 +1,18 @@
 # The Conditioning Atlas
 
+[![Validate and build](https://github.com/sr320/conditioning-index/actions/workflows/validate.yml/badge.svg)](https://github.com/sr320/conditioning-index/actions/workflows/validate.yml)
+
 Priming windows, doses, and persistence of induced environmental memory in
 marine invertebrates. A structured, filterable extraction of the sublethal
 environmental-conditioning / parental-priming literature — one row per
 experiment, not per paper — built for the Roberts Lab's environmental memory
 / predictive phenotyping framework.
 
-This directory is a **future standalone git repository**. It currently lives
-inside a Cowork session working folder; everything below assumes it will be
-`git init`'d and pushed somewhere durable (lab GitHub org, OSF, etc.) rather
-than left in a session that eventually gets reclaimed. See
-["Becoming its own repo"](#becoming-its-own-repo) for the concrete steps.
+This project is maintained in the
+[sr320/conditioning-index](https://github.com/sr320/conditioning-index)
+GitHub repository. The
+[interactive dashboard](https://sr320.github.io/conditioning-index/) is
+published through GitHub Pages from `docs/index.html`.
 
 ## What's here
 
@@ -56,11 +58,19 @@ python3 scripts/recalc_xlsx.py Conditioning_Atlas.xlsx
 python3 scripts/build_dashboard.py
 ```
 
-Dependencies: `openpyxl` (`pip install openpyxl --break-system-packages` if
-missing) and a LibreOffice install (`soffice`/`libreoffice` on PATH) for the
-recalculation step — without it, the workbook still opens fine, but the
-"Coverage gaps" sheet's formulas won't show cached values until you open and
-save the file once yourself in Excel or LibreOffice.
+Create a virtual environment and install the Python dependency before running
+the pipeline:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+```
+
+The recalculation step also needs LibreOffice (`soffice`/`libreoffice` on
+`PATH`). Without it, the workbook still opens fine, but the "Coverage gaps"
+sheet's formulas will not show cached values until you open and save the file
+once in Excel or LibreOffice.
 
 ## Updating the atlas
 
@@ -133,41 +143,26 @@ value inserted at the new column position, in order — a length mismatch will
 make `merge_rows.py` raise immediately (it validates field count per line), so
 you'll find out fast if a file was missed.
 
-## Becoming its own repo
+## Repository maintenance
 
-To promote this from a session working folder into a real, durable repository:
+Generated deliverables are committed so visitors can download the workbook or
+dashboard without installing the build tools. Regenerate them with the source
+change they represent and commit them together; do not patch generated files
+directly.
 
-1. `git init`, add a `.gitignore` for `__pycache__/`, `*.pyc`, and any local
-   LibreOffice temp/profile directories.
-2. Commit everything in this directory as the first commit. Suggested message:
-   `Initial import: 109 experiments, 105 papers, verification pass complete`.
-3. Add a `LICENSE` — check with the lab on preference (CC-BY-4.0 is a common
-   choice for a data resource like this, MIT/Apache-2.0 if the scripts are the
-   more reusable part).
-4. Consider splitting `scripts/` dependencies into a `requirements.txt`
-   (`openpyxl`) so a fresh clone's setup is `pip install -r requirements.txt`.
-5. Optional CI (GitHub Actions or equivalent): on every push, run
-   `scripts/merge_rows.py` and fail the build if it raises (catches field-count
-   mismatches and schema drift before they reach `main`). A second job could
-   run `scripts/build_xlsx.py` + `scripts/build_dashboard.py` and upload the
-   two generated files as build artifacts, so there's always a downloadable
-   up-to-date deliverable attached to the latest commit without checking
-   generated binaries into git history.
-6. Decide whether `Conditioning_Atlas.xlsx` and `Conditioning_Atlas_dashboard.html`
-   themselves belong in version control. Two reasonable models:
-   - **Generated-only artifacts**: `.gitignore` them, rebuild locally or via CI
-     whenever needed. Keeps the repo's diff history clean (source rows only).
-   - **Committed deliverables**: check them in so anyone can grab the latest
-     without running Python, at the cost of noisy binary diffs on every
-     regeneration. If you go this route, regenerate and commit them as a
-     dedicated step, not bundled into an unrelated content commit.
-7. Point new contributors at this README and `SCHEMA.md` as the two required
-   reads before touching any `rows_*.tsv` file.
-8. If the atlas grows enough to want issue tracking (e.g., "verify the
-   remaining 100 rows," "add crustacean salinity studies"), GitHub Issues
-   against this repo is a natural fit — the `excluded_*.tsv` reasons and the
-   "Structural gaps" list on the workbook's Coverage-gaps sheet are a
-   ready-made backlog.
+The `Validate and build` GitHub Actions workflow runs on pushes and pull
+requests. It validates the source rows, confirms the committed JSON and TSV are
+current, rebuilds the workbook and both dashboard copies, checks the GitHub
+Pages output, and uploads fresh deliverables for 30 days.
+
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the contributor workflow. Use
+GitHub Issues for schema changes, verification backlogs, or larger literature
+sweeps before starting work.
+
+The remaining repository-level decision is the license. No `LICENSE` should be
+added until the lab chooses whether the data should use a data/content license
+such as CC BY 4.0, the scripts should use a software license such as MIT or
+Apache-2.0, or the repository should carry separate licenses for each.
 
 ## Provenance and known limitations
 
